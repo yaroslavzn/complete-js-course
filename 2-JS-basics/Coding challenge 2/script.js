@@ -23,14 +23,16 @@ var johnsTeamAverage = johnsTeamScores / 3;
 var mikesTeamAverage = mikesTeamScores / 3;
 var marysTeamAverage = marysTeamScores / 3;
 
+console.log(johnsTeamAverage, mikesTeamAverage, marysTeamAverage);
+
 switch (true) {
     case marysTeamAverage > mikesTeamAverage && marysTeamAverage > johnsTeamAverage:
         console.log('Mary\'s team won with ' + marysTeamAverage + ' average points.');
         break;
-    case johnsTeamAverage > mikesTeamAverage:
+    case johnsTeamAverage > mikesTeamAverage && johnsTeamAverage > marysTeamAverage:
         console.log('John\'s team won with ' + johnsTeamAverage + ' average points.');
         break;
-    case mikesTeamAverage > johnsTeamAverage:
+    case mikesTeamAverage > johnsTeamAverage && mikesTeamAverage > marysTeamAverage:
         console.log('Mike\'s team won with ' + mikesTeamAverage + ' average points.');
         break;
     default:
