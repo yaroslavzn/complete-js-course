@@ -15,7 +15,7 @@ GOOD LUCK 😀
 
 var markMass, markHeight, johnMass, johnHeight, markBmi, johnBmi, isMarkBmiGreater;
 
-markMass = 78;
+markMass = 82;
 markHeight = 1.78;
 johnMass = 85;
 johnHeight = 1.73;
@@ -23,6 +23,10 @@ johnHeight = 1.73;
 markBmi = markMass / (markHeight * markHeight);
 johnBmi = johnMass / (johnHeight * johnHeight);
 
-isMarkBmiGreater = markBmi > johnBmi;
+console.log(markBmi, johnBmi);
 
-console.log('Is Mark\'s BMI higher than John\'s? ' + isMarkBmiGreater);
+if (markBmi > johnBmi) {
+    console.log('Mark\'s BMI is greater than John\'s BMI.');
+} else {
+    console.log('John\'s BMI is greater than Mark\'s BMI.');
+}
