@@ -328,43 +328,43 @@ c) correct answer (I would use a number for this)
 7. Suppose this code would be a plugin for other programmers to use in their code. So make sure that all your code is private and doesn't interfere with the other programmers code (Hint: we learned a special technique to do exactly that).
 */
 
-(function(){
-    function Question(question, answers, correctAnswer) {
-        this.question = question;
-        this.answers = answers;
-        this.correctAnswer = correctAnswer;
-    }
-
-    Question.prototype.checkAnswer = function(answer) {
-        if (answer === this.correctAnswer) {
-            console.log('Correct!');
-        } else {
-            console.log('You make a mistake.');
-        }
-    };
-
-    Question.prototype.displayQuestion = function() {
-        console.log(this.question);
-
-        for (var i = 0; i < this.answers.length; i++) {
-            console.log(i + ': ' + this.answers[i]);
-        }
-    };
-
-    var q1 = new Question('What is a name of course teacher?', ['John', 'Kile', 'Jonas'], 2);
-    var q2 = new Question('What month is right now?', ['January', 'February', 'March'], 1);
-    var q3 = new Question('What is your favourite color?', ['Black', 'Green', 'Red', 'Blue'], 3);
-
-    var questions = [q1, q2, q3];
-
-    var randNumber = Math.floor(Math.random() * questions.length);
-
-    questions[randNumber].displayQuestion();
-
-    var answer = +prompt('Enter your answer.', '');
-
-    questions[randNumber].checkAnswer(answer);
-})();
+// (function(){
+//     function Question(question, answers, correctAnswer) {
+//         this.question = question;
+//         this.answers = answers;
+//         this.correctAnswer = correctAnswer;
+//     }
+//
+//     Question.prototype.checkAnswer = function(answer) {
+//         if (answer === this.correctAnswer) {
+//             console.log('Correct!');
+//         } else {
+//             console.log('You make a mistake.');
+//         }
+//     };
+//
+//     Question.prototype.displayQuestion = function() {
+//         console.log(this.question);
+//
+//         for (var i = 0; i < this.answers.length; i++) {
+//             console.log(i + ': ' + this.answers[i]);
+//         }
+//     };
+//
+//     var q1 = new Question('What is a name of course teacher?', ['John', 'Kile', 'Jonas'], 2);
+//     var q2 = new Question('What month is right now?', ['January', 'February', 'March'], 1);
+//     var q3 = new Question('What is your favourite color?', ['Black', 'Green', 'Red', 'Blue'], 3);
+//
+//     var questions = [q1, q2, q3];
+//
+//     var randNumber = Math.floor(Math.random() * questions.length);
+//
+//     questions[randNumber].displayQuestion();
+//
+//     var answer = +prompt('Enter your answer.', '');
+//
+//     questions[randNumber].checkAnswer(answer);
+// })();
 
 
 /*
@@ -378,3 +378,75 @@ c) correct answer (I would use a number for this)
 
 11. Display the score in the console. Use yet another method for this.
 */
+
+(function() {
+    function Question(question, answers, correctAnswer) {
+        this.question = question;
+        this.answers = answers;
+        this.correctAnswer = correctAnswer;
+    }
+
+    function score() {
+        var sc = 0;
+
+        return function(isCorrect) {
+            if (isCorrect) {
+                sc++;
+            }
+
+            return sc;
+        }
+    }
+
+    var keepScore = score();
+
+    Question.prototype.checkAnswer = function(answer, callback) {
+        var sc;
+
+        if (answer === this.correctAnswer) {
+            console.log('Correct!');
+            sc = callback(true);
+        } else {
+            console.log('You make a mistake.');
+            sc = callback(false);
+        }
+
+        this.displayScores(sc);
+    };
+
+    Question.prototype.displayQuestion = function() {
+        console.log(this.question);
+
+        for (var i = 0; i < this.answers.length; i++) {
+            console.log(i + ': ' + this.answers[i]);
+        }
+    };
+
+    Question.prototype.displayScores = function(score) {
+        console.log('Your current scores is: ' + score);
+        console.log('------------------------------------');
+    };
+
+    var q1 = new Question('What is a name of course teacher?', ['John', 'Kile', 'Jonas'], 2);
+    var q2 = new Question('What month is right now?', ['January', 'February', 'March'], 1);
+    var q3 = new Question('What is your favourite color?', ['Black', 'Green', 'Red', 'Blue'], 3);
+
+    var questions = [q1, q2, q3];
+
+    askQuestion();
+
+    function askQuestion() {
+        var randNumber = Math.floor(Math.random() * questions.length);
+
+        questions[randNumber].displayQuestion();
+
+        var answer = prompt('Enter your answer.', '');
+
+
+        if (answer !== 'exit') {
+            questions[randNumber].checkAnswer(+answer, keepScore);
+
+            askQuestion();
+        }
+    }
+})();
