@@ -21,7 +21,19 @@ var budgetModel = (function() {
         total: {
             exp: 0,
             inc: 0,
-        }
+        },
+        budget: 0,
+        percentage: -1,
+    };
+
+    var calculateTotal = function(type) {
+        var sum = 0;
+
+        data.allItems[type].forEach(function(item) {
+            sum += item.value;
+        });
+
+        data.total[type] = sum;
     };
 
     return {
@@ -44,6 +56,29 @@ var budgetModel = (function() {
 
             return newItem;
         },
+        calculateBudget: function() {
+            // Calculate total incomes
+            calculateTotal('inc');
+
+            // Calculate total expenses
+            calculateTotal('exp');
+
+            // Calculate budget
+            data.budget = data.total.inc - data.total.exp;
+
+            // Calculate percentage
+            if (data.total.inc > 0) {
+                data.percentage = Math.floor((data.total.exp / data.total.inc) * 100);
+            }
+        },
+        getBudget: function() {
+            return {
+                budget: data.budget,
+                inc: data.total.inc,
+                exp: data.total.exp,
+                percentage: data.percentage,
+            };
+        },
         testing: function() {
             return data;
         },
@@ -61,6 +96,10 @@ var budgetView = (function () {
         itemAdd: '.add__btn',
         incomesContainer: '.income__list',
         expensesContainer: '.expenses__list',
+        budgetLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expensesLabel: '.budget__expenses--value',
+        percentageLabel: '.budget__expenses--percentage',
     };
 
     return {
@@ -68,7 +107,7 @@ var budgetView = (function () {
             return {
                 type: document.querySelector(DOMstrings.itemType).value,
                 description: document.querySelector(DOMstrings.itemDescription).value,
-                value: document.querySelector(DOMstrings.itemValue).value,
+                value: parseFloat(document.querySelector(DOMstrings.itemValue).value),
             }
         },
         addUiItem: function(type, item) {
@@ -101,6 +140,17 @@ var budgetView = (function () {
 
             fields[0].focus();
         },
+        displayBudget: function(obj) {
+            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
+            document.querySelector(DOMstrings.incomeLabel).textContent = obj.inc;
+            document.querySelector(DOMstrings.expensesLabel).textContent = obj.exp;
+
+            if (obj.percentage > 0) {
+                document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
+            } else {
+                document.querySelector(DOMstrings.percentageLabel).textContent = '---';
+            }
+        },
         getDOMstrings: function() {
             return DOMstrings;
         },
@@ -125,29 +175,51 @@ var budgetController = (function (model, view) {
         });
     };
 
+    var updateBudget = function() {
+        // 1. Calculate the budget.
+        model.calculateBudget();
+
+        // 2. Return the budget
+        var budget = model.getBudget();
+
+        // 3. Display the budget on the UI
+        view.displayBudget(budget);
+    };
+
     var ctrlAddItem = function() {
         var inputData, newItem;
 
         // 1. Get the field input data
         inputData = view.getInputData();
 
-        // 2. Add the item to the budget model.
-        newItem = model.addItem(inputData.type, inputData.description, inputData.value);
+        if (inputData.description !== '' && !isNaN(inputData.value) && inputData.value > 0) {
+            // 2. Add the item to the budget model.
+            newItem = model.addItem(inputData.type, inputData.description, inputData.value);
 
-        // 3. Add the item to the budget view.
-        view.addUiItem(inputData.type, newItem);
+            // 3. Add the item to the budget view.
+            view.addUiItem(inputData.type, newItem);
 
-        // 4. Clear fields
-        view.clearFields();
+            // 4. Clear fields
+            view.clearFields();
 
-        // 4. Calculate the budget.
+            // 5. Update the budget
+            updateBudget();
+        }
 
-        // 5. Display the budget on the UI
     };
 
     return {
         init: function() {
             setupEventListeners();
+
+            view.displayBudget(
+                {
+                    budget: 0,
+                    inc: 0,
+                    exp: 0,
+                    percentage: -1,
+                }
+            );
 
             console.log('Application has started.');
         }
