@@ -2,7 +2,7 @@ import {elements} from "./base";
 
 export const getInput = () => elements.searchInput.value;
 
-const limitRecipeTitle = (title, limit = 17) => {
+export const limitRecipeTitle = (title, limit = 17) => {
     const newTitle = [];
 
     if (title.length > limit) {
@@ -45,6 +45,14 @@ export const clearInput = () => {
 export const clearSearchList = () => {
     elements.searchResList.innerHTML = '';
     elements.searchResPages.innerHTML = '';
+};
+
+export const highlightSelected = (id) => {
+    document.querySelectorAll('.results__link').forEach(el => {
+       el.classList.remove('results__link--active');
+    });
+
+    document.querySelector(`.results__link[href*="${id}"]`).classList.add('results__link--active');
 };
 
 const createButton = (page, type) => {
